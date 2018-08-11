@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 //Routing
 var visitorCount = 0;
 var data = {
-    tables: ["", "", "", "", ""],
+    tables: [],
     waitlist: []
 };
 
@@ -54,22 +54,27 @@ app.get("/api/table", function (req, res){
 
     console.log(newReservation);
 
-    for (var i = 0; i < data.tables.length; i++){
-        if (data.tables[i] == ""){
-            data.tables[i] = newReservation
-            console.log("worked");
-            return res.json(data);
-        }
-
+    var contains=false;
+    for (var i = 0; i<data.tables.length; i++){
+      if (newReservation.UniqueID == data.tables[i].UniqueID){
+        contains= true;
+      }
     }
 
-    data.waitlist.push(newReservation);
-    return res.json(data);
-    
+    if (!contains){
+    if (data.tables.length < 5){
+      data.tables.push(newReservation);
+    }else{
+      data.waitlist.push(newReservation);
+    }
+
+   
+  }
+  return res.json(data);
   });
 
   app.get("/api/clear", function(req, res) {
-    data.tables= ["", "", "", "", ""];
+    data.tables.length = 0;
     data.waitlist.length = 0;
     res.json(data)
  })
